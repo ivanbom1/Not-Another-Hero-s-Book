@@ -515,33 +515,6 @@ This project is created for educational purposes as a school assignment.
 
 ---
 
-## 👥 Contributors
-
-- **Student Name** — Full Stack Development
-- **Project Start:** February 2026
-- **Deadline:** February 14, 2026
-
----
-
-## 🎮 Example Story
-
-**Title:** The Lost Kingdom
-
-**Story Flow:**
-```
-Page 1: You wake in a dark forest
-├─ Choice A: "Go left" → Page 2
-└─ Choice B: "Go right" → Page 3
-
-Page 2: You find a castle
-└─ Choice: "Enter the castle" → Page 4 (Ending: "Noble Ending")
-
-Page 3: You meet a stranger
-└─ Choice: "Trust them" → Page 5 (Ending: "Strange Alliance")
-```
-
----
-
 ## 🔗 Quick Links
 
 - Flask API: `http://localhost:5000/api`
@@ -551,5 +524,11 @@ Page 3: You meet a stranger
 
 ---
 
-**Last Updated:** February 14, 2026  
 **Status:** Level 16/20 Complete ✅
+
+## Story
+
+- Story Writer: https://github.com/UglRar
+- Inspired by "Slay the Princess"
+- Story simplifier: Me
+- Original Story plot: 
