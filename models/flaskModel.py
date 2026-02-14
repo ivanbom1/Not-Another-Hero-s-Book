@@ -5,10 +5,10 @@ class Story(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(512), nullable=False)
-    status = db.Column(db.String(20), default='draft', nullable=False)  # draft/published/suspended
-    start_page_id = db.Column(db.Integer, db.ForeignKey('page.id'), nullable=False)
+    status = db.Column(db.String(20), default='draft', nullable=False)
+    start_page_id = db.Column(db.Integer, db.ForeignKey('page.id'), nullable=True)
     
-    pages = db.relationship('Page', backref='story', cascade='all, delete-orphan')
+    pages = db.relationship('Page', backref='story', cascade='all, delete-orphan', single_parent=True, foreign_keys=[start_page_id])
 
 class Page(db.Model):
     __tablename__ = 'page'
@@ -18,7 +18,7 @@ class Page(db.Model):
     is_ending = db.Column(db.Boolean, default=False, nullable=False)
     ending_label = db.Column(db.String(255))
     
-    choices = db.relationship('Choice', backref='page', cascade='all, delete-orphan')
+    choices = db.relationship('Choice', backref='page', cascade='all, delete-orphan', single_parent=True, foreign_keys='Choice.page_id')
 
 class Choice(db.Model):
     __tablename__ = 'choice'
