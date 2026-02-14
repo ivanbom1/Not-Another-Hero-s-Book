@@ -27,8 +27,8 @@ class StoryService:
     
 
     @staticmethod
-    def create_story(title, description):
-        story = Story(title=title, description=description, status='draft')
+    def create_story(title, description, author_id=None):
+        story = Story(title=title, description=description, status='draft', author_id=author_id)
         db.session.add(story)
         db.session.commit()
         return story

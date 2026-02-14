@@ -22,7 +22,7 @@ class StoryController:
 
     @staticmethod
     def get_story(story_id):
-
+        """GET /stories/<id>"""
         try:
             story = StoryService.get_story_by_id(story_id)
             if not story:
@@ -32,7 +32,8 @@ class StoryController:
                 'title': story.title,
                 'description': story.description,
                 'status': story.status,
-                'start_page_id': story.start_page_id
+                'start_page_id': story.start_page_id,
+                'author_id': story.author_id
             }), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
@@ -92,12 +93,14 @@ class StoryController:
             if not data or not data.get('title') or not data.get('description'):
                 return jsonify({'error': 'title and description required'}), 400
 
-            story = StoryService.create_story(data['title'], data['description'])
+            author_id = data.get('author_id')
+            story = StoryService.create_story(data['title'], data['description'], author_id)
             return jsonify({
                 'id': story.id,
                 'title': story.title,
                 'description': story.description,
                 'status': story.status,
+                'author_id': story.author_id,
                 'message': 'Story created'
             }), 201
         except Exception as e:

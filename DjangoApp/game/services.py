@@ -62,10 +62,12 @@ class FlaskAPIService:
 
 
     @staticmethod
-    def create_story(title, description):
+    def create_story(title, description, author_id=None):
 
         try:
             data = {'title': title, 'description': description}
+            if author_id:
+                data['author_id'] = author_id
             response = requests.post(f'{FLASK_API_URL}/stories', json=data)
             return response.json() if response.status_code == 201 else None
         except Exception as e:

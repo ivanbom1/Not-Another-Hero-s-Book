@@ -7,6 +7,10 @@ class Story(db.Model):
     description = db.Column(db.String(512), nullable=False)
     status = db.Column(db.String(20), default='draft', nullable=False)
     start_page_id = db.Column(db.Integer, db.ForeignKey('page.id'), nullable=True)
+    author_id = db.Column(db.String(255), nullable=True)  # Store Django username or ID
+    
+    def __str__(self):
+        return self.title
 
 class Page(db.Model):
     __tablename__ = 'page'

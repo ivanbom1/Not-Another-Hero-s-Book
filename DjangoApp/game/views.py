@@ -11,18 +11,16 @@ from game.models import UserProfile
 
 
 class StoriesListView(View):
-    """Display all published stories"""
+
     def get(self, request):
         stories = FlaskAPIService.get_published_stories()
-        
-        # Clean up orphaned plays (stories deleted in Flask but not Django)
+
         if stories:
             story_ids = [s['id'] for s in stories]
             Play.objects.exclude(story_id__in=story_ids).delete()
         else:
             Play.objects.all().delete()
-        
-        # Add play count to each story
+
         for story in stories:
             story['plays'] = Play.objects.filter(story_id=story['id']).count()
         
@@ -141,33 +139,41 @@ class StatsView(View):
 class EditStoryView(View):
 
     def get(self, request, story_id):
-
         if not request.user.is_authenticated:
             return redirect('login')
-        
+
         user_profile = request.user.userprofile
         if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
-            return HttpResponseForbidden("You don't have permission to edit stories")
+            return HttpResponseForbidden("Only authors can edit stories")
         
         story = FlaskAPIService.get_story(story_id)
         if not story:
             return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
         
-        # Check ownership (for now, we'll add story ownership to Flask)
         pages = FlaskAPIService.get_story_pages(story_id)
         
         return render(request, 'author/edit_story.html', {
             'story': story,
             'pages': pages
         })
-    
+
     def post(self, request, story_id):
         if not request.user.is_authenticated:
             return redirect('login')
-        
+
         user_profile = request.user.userprofile
         if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
-            return HttpResponseForbidden("You don't have permission to edit stories")
+            return HttpResponseForbidden("Only authors can edit stories")
+
+        story = FlaskAPIService.get_story(story_id)
+        if not story:
+            return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
         
         title = request.POST.get('title')
         description = request.POST.get('description')
@@ -183,22 +189,30 @@ class EditStoryView(View):
                 'error': 'Failed to update story'
             })
 
+
 class DeleteStoryView(View):
 
     def post(self, request, story_id):
         if not request.user.is_authenticated:
             return redirect('login')
-        
+
         user_profile = request.user.userprofile
         if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
-            return HttpResponseForbidden("You don't have permission to delete stories")
-        
-        if FlaskAPIService.delete_story(story_id):
+            return HttpResponseForbidden("Only authors can delete stories")
 
+        story = FlaskAPIService.get_story(story_id)
+        if not story:
+            return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only delete your own stories")
+
+        if FlaskAPIService.delete_story(story_id):
             Play.objects.filter(story_id=story_id).delete()
             return redirect('stories_list')
         else:
             return redirect('edit_story', story_id=story_id)
+
 
 class CreateStoryView(View):
 
@@ -227,16 +241,19 @@ class CreateStoryView(View):
             return render(request, 'author/create_story.html', {
                 'error': 'Title and description are required'
             })
-        
-        story = FlaskAPIService.create_story(title, description)
+
+        story = FlaskAPIService.create_story(title, description, author_id=request.user.username)
         if story:
+
+            if not story.get('author_id'):
+                story['author_id'] = request.user.username
             return redirect('edit_story', story_id=story['id'])
         else:
             return render(request, 'author/create_story.html', {
                 'error': 'Failed to create story'
             })
 
-@method_decorator(login_required, name='dispatch')
+
 class DeleteStoryView(View):
 
     def post(self, request, story_id):
@@ -245,15 +262,51 @@ class DeleteStoryView(View):
         else:
             return redirect('edit_story', story_id=story_id)
 
-@method_decorator(login_required, name='dispatch')
+
 class AddPageView(View):
 
     def get(self, request, story_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
         story = FlaskAPIService.get_story(story_id)
         if not story:
             return redirect('stories_list')
 
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
+        
         return render(request, 'author/add_page.html', {'story': story})
+    
+    def post(self, request, story_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        story = FlaskAPIService.get_story(story_id)
+        if not story:
+            return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
+        
+        text = request.POST.get('text')
+        is_ending = request.POST.get('is_ending') == 'on'
+        ending_label = request.POST.get('ending_label') if is_ending else None
+        
+        if not text:
+            return render(request, 'author/add_page.html', {
+                'story': story,
+                'error': 'Page text is required'
+            })
+        
+        page = FlaskAPIService.create_page(story_id, text, is_ending, ending_label)
+        if page:
+            return redirect('edit_story', story_id=story_id)
+        else:
+            return render(request, 'author/add_page.html', {
+                'story': story,
+                'error': 'Failed to create page'
+            })
 
     def post(self, request, story_id):
         text = request.POST.get('text')
@@ -275,61 +328,97 @@ class AddPageView(View):
                 'error': 'Failed to create page'
             })
 
-@method_decorator(login_required, name='dispatch')
+
 class AddChoiceView(View):
 
     def get(self, request, story_id, page_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
         story = FlaskAPIService.get_story(story_id)
         page = FlaskAPIService.get_page(page_id)
-        story_pages = FlaskAPIService.get_story_pages(story_id)
-
+        
         if not story or not page:
             return redirect('stories_list')
 
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
+        
         return render(request, 'author/add_choice.html', {
             'story': story,
             'page': page,
-            'story_pages': story_pages
+            'story_pages': FlaskAPIService.get_story_pages(story_id)
         })
-
+    
     def post(self, request, story_id, page_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        story = FlaskAPIService.get_story(story_id)
+        page = FlaskAPIService.get_page(page_id)
+        
+        if not story or not page:
+            return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
+        
         text = request.POST.get('text')
         next_page_id = request.POST.get('next_page_id')
-
+        
         if not text or not next_page_id:
             story_pages = FlaskAPIService.get_story_pages(story_id)
             return render(request, 'author/add_choice.html', {
-                'story': FlaskAPIService.get_story(story_id),
-                'page': FlaskAPIService.get_page(page_id),
+                'story': story,
+                'page': page,
                 'story_pages': story_pages,
                 'error': 'Text and next page are required'
             })
-
+        
         choice = FlaskAPIService.create_choice(page_id, text, int(next_page_id))
         if choice:
             return redirect('edit_story', story_id=story_id)
         else:
             story_pages = FlaskAPIService.get_story_pages(story_id)
             return render(request, 'author/add_choice.html', {
-                'story': FlaskAPIService.get_story(story_id),
-                'page': FlaskAPIService.get_page(page_id),
+                'story': story,
+                'page': page,
                 'story_pages': story_pages,
                 'error': 'Failed to create choice'
             })
 
-@method_decorator(login_required, name='dispatch')    
+
 class DeletePageView(View):
 
     def post(self, request, story_id, page_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        story = FlaskAPIService.get_story(story_id)
+        if not story:
+            return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
+        
         if FlaskAPIService.delete_page(page_id):
             return redirect('edit_story', story_id=story_id)
         else:
             return redirect('edit_story', story_id=story_id)
 
-@method_decorator(login_required, name='dispatch')
 class DeleteChoiceView(View):
 
     def post(self, request, story_id, page_id, choice_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        story = FlaskAPIService.get_story(story_id)
+        if not story:
+            return redirect('stories_list')
+
+        if story.get('author_id') != request.user.username and not request.user.is_staff:
+            return HttpResponseForbidden("You can only edit your own stories")
+        
         if FlaskAPIService.delete_choice(choice_id):
             return redirect('edit_story', story_id=story_id)
         else:
