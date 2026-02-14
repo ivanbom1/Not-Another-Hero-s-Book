@@ -3,35 +3,38 @@
 {% block title %}Add Page - NAHB{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 600px; margin: 0 auto;">
-    <h2>📝 Add Page to "{{ story.title }}"</h2>
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+    <h2>📖 Add Page to "{{ story.title }}"</h2>
+    <p style="color: #666; margin-bottom: 2rem;">Continue the narrative with a new scene or chapter.</p>
     
     {% if error %}
         <div class="error">{{ error }}</div>
     {% endif %}
     
-    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
         {% csrf_token %}
         
         <div>
-            <label for="text">Page Text:</label>
-            <textarea id="text" name="text" rows="6" required placeholder="Write the scene/page content here..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            <label for="text">Scene Description:</label>
+            <textarea id="text" name="text" rows="7" required placeholder="Write an immersive description of what happens on this page. Paint a vivid picture for your readers..." style="background: #faf5f0;"></textarea>
         </div>
         
-        <div>
-            <label>
-                <input type="checkbox" id="is_ending" name="is_ending">
-                <strong>This is an ending page</strong>
+        <div style="background: linear-gradient(135deg, #f5e6d3 0%, #e8d7c3 100%); padding: 1.2rem; border-radius: 4px; border-left: 4px solid #8b4513;">
+            <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; font-weight: bold; color: #3e2723; margin-bottom: 0;">
+                <input type="checkbox" id="is_ending" name="is_ending" style="width: auto; border: 2px solid #8b4513; cursor: pointer;">
+                <span>🎭 This is an ending page</span>
             </label>
+            <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Check this if readers can complete the story at this page.</p>
         </div>
         
-        <div id="ending_label_section" style="display: none;">
-            <label for="ending_label">Ending Label (optional):</label>
-            <input type="text" id="ending_label" name="ending_label" placeholder="e.g., 'Happy Ending', 'Bad Ending'" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+        <div id="ending_label_section" style="display: none; background: linear-gradient(135deg, #e8f5e9 0%, #d4edda 100%); padding: 1.5rem; border-radius: 4px; border-left: 4px solid #2d5016;">
+            <label for="ending_label">✨ Ending Label (optional):</label>
+            <input type="text" id="ending_label" name="ending_label" placeholder="e.g., 'The Happy Ending', 'A Tragic Conclusion', 'The Secret Route'..." style="background: #faf5f0;">
+            <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Give this ending a memorable name that will be displayed when readers complete the story.</p>
         </div>
         
         <div style="display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-success" style="flex: 1;">Add Page</button>
+            <button type="submit" class="btn btn-success" style="flex: 1;">➕ Add Page</button>
             <a href="{% url 'edit_story' story.id %}" class="btn" style="flex: 1; text-align: center;">Cancel</a>
         </div>
     </form>

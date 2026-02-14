@@ -3,36 +3,45 @@
 {% block title %}Add Choice - NAHB{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 600px; margin: 0 auto;">
-    <h2>🔗 Add Choice</h2>
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+    <h2>Add Choice</h2>
+    <p style="color: #666; margin-bottom: 2rem;">Create a decision point that shapes the reader's journey.</p>
     
-    <p><strong>Story:</strong> {{ story.title }}</p>
-    <p><strong>Page:</strong> {{ page.text|truncatewords:10 }}</p>
+    <div style="background: linear-gradient(135deg, #f5e6d3 0%, #e8d7c3 100%); padding: 1.5rem; border-radius: 4px; border-left: 4px solid #8b4513; margin-bottom: 2rem;">
+        <p style="margin-bottom: 0.5rem;"><strong>Story:</strong> <span style="color: #8b4513;">{{ story.title }}</span></p>
+        <p><strong>Current Page:</strong> <span style="color: #666; font-style: italic;">{{ page.text|truncatewords:15 }}</span></p>
+    </div>
     
     {% if error %}
         <div class="error">{{ error }}</div>
     {% endif %}
     
-    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
         {% csrf_token %}
         
         <div>
             <label for="text">Choice Text:</label>
-            <input type="text" id="text" name="text" required placeholder="e.g., 'Go left into the forest'" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+            <input type="text" id="text" name="text" required placeholder="e.g., 'Venture into the dark forest', 'Trust the mysterious stranger'..." style="background: #faf5f0;">
+            <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Write this choice from the reader's perspective. What action or decision do they make?</p>
         </div>
         
         <div>
-            <label for="next_page_id">Next Page:</label>
-            <select id="next_page_id" name="next_page_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
-                <option value="">-- Select a page --</option>
+            <label for="next_page_id">Where does this choice lead?</label>
+            <select id="next_page_id" name="next_page_id" required style="background: #faf5f0;">
+                <option value="">-- Select a destination page --</option>
                 {% for p in story_pages %}
-                    <option value="{{ p.id }}">Page {{ p.sequence }}{% if p.is_ending %} (Ending){% endif %}</option>
+                    <option value="{{ p.id }}">Page {{ p.sequence }}{% if p.is_ending %}(Ending){% endif %}</option>
                 {% endfor %}
             </select>
+            <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Select the page that will be displayed after the reader makes this choice.</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%); padding: 1.2rem; border-radius: 4px; color: #666; font-size: 0.95rem;">
+            <p>💡 <strong>Tip:</strong> Create multiple choices to give readers meaningful decisions. Each choice should feel impactful and lead to different story branches.</p>
         </div>
         
         <div style="display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-success" style="flex: 1;">Add Choice</button>
+            <button type="submit" class="btn btn-success" style="flex: 1;">+ Add Choice</button>
             <a href="{% url 'edit_story' story.id %}" class="btn" style="flex: 1; text-align: center;">Cancel</a>
         </div>
     </form>
