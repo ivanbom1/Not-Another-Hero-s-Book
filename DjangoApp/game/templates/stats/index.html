@@ -23,12 +23,12 @@
                     {% if stat.endings %}
                         <h5>Ending Distribution:</h5>
                         <ul>
-                            {% for ending in stat.endings %}
-                                <li>
-                                    <strong>{{ ending.ending_label|default:"Unlabeled" }}</strong>: 
-                                    {{ ending.count }} ({{ ending.count|divide:stat.total_plays|multiply:100|floatformat:1 }}%)
-                                </li>
-                            {% endfor %}
+                        {% for ending in stat.endings %}
+                            <li>
+                                <strong>{{ ending.ending_label|default:"Unlabeled" }}</strong>: 
+                                {{ ending.count }} ({{ ending.percentage }}%)
+                            </li>
+                        {% endfor %}
                         </ul>
                     {% endif %}
                 </div>

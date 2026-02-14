@@ -34,6 +34,7 @@ class StoriesListView(View):
             'stories': stories,
         })
 
+@method_decorator(login_required, name='dispatch')
 class StoryDetailView(View):
 
     def get(self, request, story_id):
@@ -52,7 +53,7 @@ class StoryDetailView(View):
             'endings': endings
         })
 
-
+@method_decorator(login_required, name='dispatch')
 class PlayStoryView(View):
 
     
@@ -129,29 +130,34 @@ class StatsView(View):
 
     def get(self, request):
 
-        stories = FlaskAPIService.get_published_stories()
-
+        stories = FlaskAPIService.get_all_stories()
+        
         stats_data = []
         for story in stories:
             plays = Play.objects.filter(story_id=story['id'])
             total_plays = plays.count()
-
-            endings = plays.values('ending_label').annotate(count=Count('id'))
             
-            stats_data.append({
-                'story': story,
-                'total_plays': total_plays,
-                'endings': list(endings)
-            })
+            if total_plays > 0:
 
+                endings = plays.values('ending_label').annotate(count=Count('id'))
+
+                for ending in endings:
+                    ending['percentage'] = round((ending['count'] / total_plays) * 100, 1)
+                
+                stats_data.append({
+                    'story': story,
+                    'total_plays': total_plays,
+                    'endings': list(endings)
+                })
+        
         total_plays_overall = Play.objects.count()
-
+        
         return render(request, 'stats/index.html', {
             'stats_data': stats_data,
             'total_plays': total_plays_overall
         })
 
-
+@method_decorator(login_required, name='dispatch')
 class EditStoryView(View):
 
     def get(self, request, story_id):
@@ -205,7 +211,7 @@ class EditStoryView(View):
                 'error': 'Failed to update story'
             })
 
-
+@method_decorator(login_required, name='dispatch')
 class DeleteStoryView(View):
 
     def post(self, request, story_id):
@@ -229,7 +235,7 @@ class DeleteStoryView(View):
         else:
             return redirect('edit_story', story_id=story_id)
 
-
+@method_decorator(login_required, name='dispatch')
 class CreateStoryView(View):
 
     def get(self, request):
@@ -269,7 +275,7 @@ class CreateStoryView(View):
                 'error': 'Failed to create story'
             })
 
-
+@method_decorator(login_required, name='dispatch')
 class DeleteStoryView(View):
 
     def post(self, request, story_id):
@@ -278,7 +284,7 @@ class DeleteStoryView(View):
         else:
             return redirect('edit_story', story_id=story_id)
 
-
+@method_decorator(login_required, name='dispatch')
 class AddPageView(View):
 
     def get(self, request, story_id):
@@ -344,7 +350,7 @@ class AddPageView(View):
                 'error': 'Failed to create page'
             })
 
-
+@method_decorator(login_required, name='dispatch')
 class AddChoiceView(View):
 
     def get(self, request, story_id, page_id):
@@ -403,7 +409,7 @@ class AddChoiceView(View):
                 'error': 'Failed to create choice'
             })
 
-
+@method_decorator(login_required, name='dispatch')
 class DeletePageView(View):
 
     def post(self, request, story_id, page_id):
@@ -422,6 +428,7 @@ class DeletePageView(View):
         else:
             return redirect('edit_story', story_id=story_id)
 
+@method_decorator(login_required, name='dispatch')
 class DeleteChoiceView(View):
 
     def post(self, request, story_id, page_id, choice_id):
