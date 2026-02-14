@@ -1,4 +1,4 @@
-from . import db
+from models import db
 
 class Story(db.Model):
     __tablename__ = 'story'
