@@ -12,107 +12,220 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Georgia', 'Garamond', serif;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
             min-height: 100vh;
             color: #333;
         }
         
         .navbar {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 1rem 2rem;
-            color: white;
+            background: linear-gradient(135deg, #8b4513 0%, #5c2e0a 100%);
+            padding: 1.5rem 2rem;
+            color: #f5e6d3;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border-bottom: 3px solid #3e2723;
         }
         
         .navbar h1 {
-            font-size: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .navbar nav {
+            display: flex;
+            gap: 2rem;
         }
         
         .navbar nav a {
-            color: white;
+            color: #f5e6d3;
             text-decoration: none;
-            margin: 0 1rem;
-            transition: color 0.3s;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .navbar nav a:hover {
-            color: #667eea;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
         
         .card {
-            background: white;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d7c3 100%);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            padding: 2.5rem;
             margin-bottom: 2rem;
+            border: 2px solid #8b4513;
+            position: relative;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8b4513, transparent);
         }
         
         .btn {
             display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: #667eea;
-            color: white;
+            padding: 0.9rem 1.8rem;
+            background: linear-gradient(135deg, #8b4513 0%, #5c2e0a 100%);
+            color: #f5e6d3;
             text-decoration: none;
-            border: none;
+            border: 2px solid #3e2723;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
             font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         
         .btn:hover {
-            background-color: #764ba2;
-        }
-        
-        .btn-danger {
-            background-color: #e74c3c;
-        }
-        
-        .btn-danger:hover {
-            background-color: #c0392b;
+            background: linear-gradient(135deg, #a0522d 0%, #6b3410 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
         
         .btn-success {
-            background-color: #27ae60;
+            background: linear-gradient(135deg, #2d5016 0%, #1a3209 100%);
+            border-color: #0f1f06;
         }
         
         .btn-success:hover {
-            background-color: #229954;
+            background: linear-gradient(135deg, #3a6b1f 0%, #22400c 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%);
+            border-color: #3e0000;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #a00000 0%, #6b0000 100%);
         }
         
         .error {
-            background-color: #f8d7da;
-            color: #721c24;
+            background: #fdd;
+            color: #600;
             padding: 1rem;
+            border-left: 4px solid #a00;
             border-radius: 4px;
             margin-bottom: 1rem;
         }
         
         .success {
-            background-color: #d4edda;
-            color: #155724;
+            background: #dfd;
+            color: #060;
             padding: 1rem;
+            border-left: 4px solid #0a0;
             border-radius: 4px;
             margin-bottom: 1rem;
         }
         
-        h2 {
+        h2, h3, h4, h5 {
+            color: #3e2723;
             margin-bottom: 1rem;
-            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid #8b4513;
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 1.5rem;
         }
         
         p {
-            line-height: 1.6;
+            line-height: 1.8;
             margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3e2723;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #8b4513;
+            border-radius: 4px;
+            background: #faf5f0;
+            color: #333;
+            font-family: 'Georgia', serif;
+            font-size: 1rem;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #d4a574;
+            box-shadow: 0 0 8px rgba(212, 165, 116, 0.3);
+        }
+        
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .story-card {
+            border: 2px solid #8b4513;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d7c3 100%);
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .story-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .story-card h3 {
+            color: #3e2723;
+            margin-bottom: 0.5rem;
+        }
+        
+        .story-card p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: #333;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
         }
         
         {% block extra_css %}{% endblock %}
@@ -120,20 +233,20 @@
 </head>
 <body>
     <div class="navbar">
-    <h1>📖 NAHB</h1>
-    <nav>
-        <a href="{% url 'stories_list' %}">Stories</a>
-        {% if user.is_authenticated %}
-            {% if user.userprofile.role == 'author' or user.is_staff %}
-                <a href="{% url 'create_story' %}">Write</a>
+        <h1>📖 Medieval Novel Player</h1>
+        <nav>
+            <a href="{% url 'stories_list' %}">Stories</a>
+            {% if user.is_authenticated %}
+                {% if user.userprofile.role == 'author' or user.is_staff %}
+                    <a href="{% url 'create_story' %}">Write</a>
+                {% endif %}
+                <a href="{% url 'stats' %}">Stats</a>
+                <a href="{% url 'logout' %}">Logout ({{ user.username }})</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
             {% endif %}
-            <a href="{% url 'stats' %}">Stats</a>
-            <a href="{% url 'logout' %}">Logout ({{ user.username }})</a>
-        {% else %}
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'register' %}">Register</a>
-        {% endif %}
-    </nav>
+        </nav>
     </div>
     
     <div class="container">

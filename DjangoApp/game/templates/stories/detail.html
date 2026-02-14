@@ -5,31 +5,49 @@
 {% block content %}
 <div class="card">
     <h2>{{ story.title }}</h2>
-    <p>{{ story.description }}</p>
+    <p style="font-style: italic; color: #666; margin-bottom: 2rem;">{{ story.description }}</p>
     
-    <div style="margin: 1.5rem 0; padding: 1rem; background: #f0f0f0; border-radius: 4px;">
-        <p><strong>Status:</strong> {{ story.status }}</p>
-        <p><strong>Total Plays:</strong> {{ total_plays }}</p>
+    <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #f5e6d3 0%, #e8d7c3 100%); border-left: 4px solid #8b4513; border-radius: 4px;">
+        <p style="margin-bottom: 0.5rem;"><strong>Status:</strong> 
+            {% if story.status == 'published' %}
+                <span style="color: #2d5016;">Published</span>
+            {% elif story.status == 'draft' %}
+                <span style="color: #666;">Draft</span>
+            {% else %}
+                <span style="color: #a00;">Suspended</span>
+            {% endif %}
+        </p>
+        <p><strong>Total Playthroughs:</strong> {{ total_plays }}</p>
     </div>
     
     {% if endings %}
-        <h3>Ending Distribution:</h3>
-        <ul>
+        <h3 style="margin-top: 2rem;">Ending Distribution:</h3>
+        <ul style="margin: 1rem 0 1rem 2rem;">
             {% for ending in endings %}
-                <li>
-                    <strong>{{ ending.ending_label|default:"Unlabeled" }}</strong>: 
-                    {{ ending.count }} time{{ ending.count|pluralize }}
+                <li style="margin-bottom: 0.8rem;">
+                    <strong>{{ ending.ending_label|default:"Unlabeled Ending" }}</strong>: 
+                    <span style="color: #8b4513; font-weight: bold;">{{ ending.count }}</span> 
+                    time{{ ending.count|pluralize }}
+                    {% if total_plays > 0 %}
+                        <span style="color: #666;">({{ ending.percentage }}%)</span>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No endings reached yet.</p>
+        <p style="color: #666; font-style: italic; margin-top: 2rem;">No one has completed this story yet. Be the first!</p>
     {% endif %}
     
-    <div style="margin-top: 2rem;">
-        <a href="{% url 'play_story' story.id %}" class="btn btn-success">Play Story</a>
-        <a href="{% url 'edit_story' story.id %}" class="btn">Edit</a>
-        <a href="{% url 'stories_list' %}" class="btn">Back</a>
+    <div style="margin-top: 2.5rem; padding-top: 2rem; border-top: 2px solid #8b4513; display: flex; gap: 1rem; flex-wrap: wrap;">
+        {% if story.status != 'suspended' %}
+            <a href="{% url 'play_story' story.id %}" class="btn btn-success">Play Story</a>
+        {% else %}
+            <button class="btn btn-danger" disabled>Story Suspended</button>
+        {% endif %}
+        {% if user.is_authenticated and user.username == story.author_id or user.is_staff %}
+            <a href="{% url 'edit_story' story.id %}" class="btn">Edit Story</a>
+        {% endif %}
+        <a href="{% url 'stories_list' %}" class="btn">Story List</a>
     </div>
 </div>
 {% endblock %}

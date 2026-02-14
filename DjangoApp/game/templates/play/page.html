@@ -3,38 +3,42 @@
 {% block title %}Playing: {{ story.title }} - NAHB{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 800px; margin: 0 auto;">
-    <h2>{{ story.title }}</h2>
+<div class="card" style="max-width: 850px; margin: 0 auto;">
+    <h2 style="border: none; color: #8b4513;">{{ story.title }}</h2>
     
-    <div style="background: #f9f9f9; padding: 2rem; border-radius: 8px; margin: 2rem 0; min-height: 200px;">
-        <p style="font-size: 1.1rem; line-height: 1.8;">{{ page.text }}</p>
+    <div style="background: linear-gradient(135deg, #faf5f0 0%, #f5e6d3 100%); padding: 2.5rem; border-radius: 8px; margin: 2rem 0; min-height: 250px; border-left: 4px solid #8b4513; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+        <p style="font-size: 1.15rem; line-height: 2; color: #333; font-family: 'Georgia', serif;">{{ page.text }}</p>
     </div>
     
     {% if is_ending %}
-        <div style="background: #d4edda; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
-            <strong>🎉 End: {{ page.ending_label|default:"Story Complete" }}</strong>
+        <div style="background: linear-gradient(135deg, #2d5016 0%, #1a3209 100%); padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: center; border: 2px solid #8b4513;">
+            <p style="color: #f5e6d3; font-size: 1.3rem; font-weight: bold;">🎭 THE END</p>
+            <p style="color: #d4e6c3; font-size: 1.1rem;">{{ page.ending_label|default:"Story Complete" }}</p>
         </div>
     {% else %}
-        <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+        <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
             {% csrf_token %}
-            <h3>What do you do?</h3>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                {% for choice in page.choices %}
-                    <label style="padding: 1rem; border: 2px solid #667eea; border-radius: 4px; cursor: pointer; transition: all 0.3s;">
-                        <input type="radio" name="next_page_id" value="{{ choice.next_page_id }}" required style="margin-right: 0.5rem;">
-                        {{ choice.text }}
-                    </label>
-                {% empty %}
-                    <p>No choices available.</p>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-success">Continue</button>
+            <h3 style="color: #8b4513;">What do you choose?</h3>
+            
+            {% if page.choices %}
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for choice in page.choices %}
+                        <label style="padding: 1.2rem; border: 2px solid #8b4513; border-radius: 4px; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #f5e6d3 0%, #e8d7c3 100%); display: flex; align-items: center;">
+                            <input type="radio" name="next_page_id" value="{{ choice.next_page_id }}" required style="margin-right: 1rem; width: auto; border: none;">
+                            <span style="font-size: 1.05rem; color: #333;">{{ choice.text }}</span>
+                        </label>
+                    {% empty %}
+                        <p style="color: #a00;">No choices available.</p>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-success" style="align-self: flex-start; margin-top: 1rem;">Continue Your Journey →</button>
+            {% endif %}
         </form>
     {% endif %}
     
-    <div style="margin-top: 2rem;">
-        <a href="{% url 'story_detail' story.id %}" class="btn">Back to Story</a>
-        <a href="{% url 'stories_list' %}" class="btn">Back to List</a>
+    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #8b4513; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{% url 'story_detail' story.id %}" class="btn">← Back to Story</a>
+        <a href="{% url 'stories_list' %}" class="btn">📚 Story List</a>
     </div>
 </div>
 {% endblock %}
