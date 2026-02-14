@@ -18,7 +18,7 @@ class StoryController:
             } for s in stories]), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 
     @staticmethod
     def get_story(story_id):
@@ -36,7 +36,7 @@ class StoryController:
             }), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 
     @staticmethod
     def get_story_start(story_id):
@@ -59,11 +59,11 @@ class StoryController:
             }), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 
     @staticmethod
     def get_page(page_id):
-        
+
         try:
             page = StoryService.get_page_by_id(page_id)
             if not page:
@@ -91,7 +91,7 @@ class StoryController:
             data = request.get_json()
             if not data or not data.get('title') or not data.get('description'):
                 return jsonify({'error': 'title and description required'}), 400
-            
+
             story = StoryService.create_story(data['title'], data['description'])
             return jsonify({
                 'id': story.id,
@@ -102,11 +102,11 @@ class StoryController:
             }), 201
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-   
-    
+
+
     @staticmethod
     def update_story(story_id):
-        
+
         try:
             story = StoryService.get_story_by_id(story_id)
             if not story:
@@ -128,11 +128,11 @@ class StoryController:
             }), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 
     @staticmethod
     def delete_story(story_id):
-        
+
         try:
             story = StoryService.get_story_by_id(story_id)
             if not story:
@@ -142,20 +142,20 @@ class StoryController:
             return jsonify({'message': 'Story deleted'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 
     @staticmethod
     def create_page(story_id):
-        
+
         try:
             story = StoryService.get_story_by_id(story_id)
             if not story:
                 return jsonify({'error': 'Story not found'}), 404
-            
+
             data = request.get_json()
             if not data or not data.get('text'):
                 return jsonify({'error': 'text required'}), 400
-            
+
             page = StoryService.create_page(
                 story_id,
                 text=data['text'],
@@ -172,11 +172,11 @@ class StoryController:
             }), 201
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 
     @staticmethod
     def create_choice(page_id):
-        
+
         try:
             page = StoryService.get_page_by_id(page_id)
             if not page:
@@ -198,5 +198,37 @@ class StoryController:
                 'next_page_id': choice.next_page_id,
                 'message': 'Choice created'
             }), 201
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+
+    @staticmethod
+    def get_story_pages(story_id):
+
+        try:
+            pages = StoryService.get_story_pages(story_id)
+            return jsonify(pages), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+        
+    @staticmethod
+    def delete_page(page_id):
+
+        try:
+            if StoryService.delete_page(page_id):
+                return jsonify({'message': 'Page deleted'}), 200
+            else:
+                return jsonify({'error': 'Page not found'}), 404
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @staticmethod
+    def delete_choice(choice_id):
+
+        try:
+            if StoryService.delete_choice(choice_id):
+                return jsonify({'message': 'Choice deleted'}), 200
+            else:
+                return jsonify({'error': 'Choice not found'}), 404
         except Exception as e:
             return jsonify({'error': str(e)}), 500

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistics - NAHB{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 Game Statistics</h2>
+    
+    <div style="background: #f0f0f0; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3>Overall Stats</h3>
+        <p><strong>Total Playthroughs:</strong> {{ total_plays }}</p>
+    </div>
+    
+    <h3>Story Breakdown</h3>
+    
+    {% if stats_data %}
+        {% for stat in stats_data %}
+            {% if stat.total_plays > 0 %}
+                <div style="border: 1px solid #ddd; padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 4px;">
+                    <h4>{{ stat.story.title }}</h4>
+                    <p><strong>Total Plays:</strong> {{ stat.total_plays }}</p>
+                    
+                    {% if stat.endings %}
+                        <h5>Ending Distribution:</h5>
+                        <ul>
+                            {% for ending in stat.endings %}
+                                <li>
+                                    <strong>{{ ending.ending_label|default:"Unlabeled" }}</strong>: 
+                                    {{ ending.count }} ({{ ending.count|divide:stat.total_plays|multiply:100|floatformat:1 }}%)
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No play data yet. <a href="{% url 'stories_list' %}">Start playing!</a></p>
+    {% endif %}
+</div>
+{% endblock %}

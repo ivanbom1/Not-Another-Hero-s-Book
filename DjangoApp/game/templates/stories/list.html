@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Stories - NAHB{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>📚 Published Stories</h2>
+        <a href="{% url 'create_story' %}" class="btn btn-success">+ Create Story</a>
+    </div>
+    
+    {% if stories %}
+        <div class="stories-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+            {% for story in stories %}
+                <div class="story-card" style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 8px; background: #f9f9f9;">
+                    <h3>{{ story.title }}</h3>
+                    <p>{{ story.description }}</p>
+                    <p style="color: #666; font-size: 0.9rem;">
+                        <strong>Plays:</strong> {{ story.plays|default:"0" }}
+                    </p>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <a href="{% url 'story_detail' story.id %}" class="btn" style="flex: 1; text-align: center;">View</a>
+                        <a href="{% url 'play_story' story.id %}" class="btn btn-success" style="flex: 1; text-align: center;">Play</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No stories available yet. <a href="{% url 'create_story' %}">Create one!</a></p>
+    {% endif %}
+</div>
+{% endblock %}
