@@ -6,3 +6,4 @@ load_dotenv()
 class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mydatabase.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    API_KEY = os.getenv('API_KEY', 'nahb-secret-key-2026')
