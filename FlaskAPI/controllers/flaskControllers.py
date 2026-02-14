@@ -1,28 +1,35 @@
 from flask import request, jsonify
 from services.flaskServices import StoryService
+from models.flaskModel import Story, Page, Choice
 
 
 class StoryController:
 
     @staticmethod
-    def get_published_stories():
+    def get_all_stories():
 
         try:
-            stories = StoryService.get_all_published_stories()
+            status = request.args.get('status')
+            
+            if status:
+                stories = StoryService.get_stories_by_status(status)
+            else:
+                stories = StoryService.get_all_stories()
+            
             return jsonify([{
                 'id': s.id,
                 'title': s.title,
                 'description': s.description,
                 'status': s.status,
-                'start_page_id': s.start_page_id
+                'start_page_id': s.start_page_id,
+                'author_id': s.author_id
             } for s in stories]), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-
     @staticmethod
     def get_story(story_id):
-        """GET /stories/<id>"""
+
         try:
             story = StoryService.get_story_by_id(story_id)
             if not story:

@@ -4,8 +4,12 @@ from models.flaskModel import Story, Page, Choice
 class StoryService:
 
     @staticmethod
-    def get_all_published_stories():
-        return Story.query.filter_by(status='published').all()
+    def get_all_stories():
+        return Story.query.all()
+
+    @staticmethod
+    def get_stories_by_status(status):
+        return Story.query.filter_by(status=status).all()
     
 
     @staticmethod

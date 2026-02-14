@@ -142,3 +142,13 @@ class FlaskAPIService:
         except Exception as e:
             print(f"Error: {e}")
             return False
+        
+    @staticmethod
+    def get_all_stories():
+
+        try:
+            response = requests.get(f'{FLASK_API_URL}/stories')
+            return response.json() if response.status_code == 200 else []
+        except Exception as e:
+            print(f"Error fetching stories: {e}")
+            return []
