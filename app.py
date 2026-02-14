@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from config import Config
 from models import db
-from models.storyModel import Story
+from models.flaskModel import Story, Page, Choice
 
 load_dotenv()
 
