@@ -3,22 +3,31 @@ from django.views import View
 from django.db.models import Count, Q
 from game.services import FlaskAPIService
 from game.models import Play
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from game.models import UserProfile
+from django.http import HttpResponseForbidden
+from game.models import UserProfile
 
 
 class StoriesListView(View):
-
+    """Display all published stories"""
     def get(self, request):
         stories = FlaskAPIService.get_published_stories()
-        stats = {}
-
+        
+        # Clean up orphaned plays (stories deleted in Flask but not Django)
+        if stories:
+            story_ids = [s['id'] for s in stories]
+            Play.objects.exclude(story_id__in=story_ids).delete()
+        else:
+            Play.objects.all().delete()
+        
+        # Add play count to each story
         for story in stories:
-            play_count = Play.objects.filter(story_id=story['id']).count()
-            story['plays'] = play_count
-            stories_with_stats = stories
-
+            story['plays'] = Play.objects.filter(story_id=story['id']).count()
+        
         return render(request, 'stories/list.html', {
             'stories': stories,
-            'stats': stats
         })
 
 
@@ -129,48 +138,41 @@ class StatsView(View):
         })
 
 
-class CreateStoryView(View):
-
-    def get(self, request):
-        return render(request, 'author/create_story.html')
-
-    def post(self, request):
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-
-        if not title or not description:
-            return render(request, 'author/create_story.html', {
-                'error': 'Title and description are required'
-            })
-
-        story = FlaskAPIService.create_story(title, description)
-        if story:
-            return redirect('edit_story', story_id=story['id'])
-        else:
-            return render(request, 'author/create_story.html', {
-                'error': 'Failed to create story'
-            })
-
-
 class EditStoryView(View):
-    """Edit story details"""
+
     def get(self, request, story_id):
+
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        user_profile = request.user.userprofile
+        if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
+            return HttpResponseForbidden("You don't have permission to edit stories")
+        
         story = FlaskAPIService.get_story(story_id)
         if not story:
             return redirect('stories_list')
-
+        
+        # Check ownership (for now, we'll add story ownership to Flask)
         pages = FlaskAPIService.get_story_pages(story_id)
-
+        
         return render(request, 'author/edit_story.html', {
             'story': story,
             'pages': pages
         })
-
+    
     def post(self, request, story_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        user_profile = request.user.userprofile
+        if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
+            return HttpResponseForbidden("You don't have permission to edit stories")
+        
         title = request.POST.get('title')
         description = request.POST.get('description')
         status = request.POST.get('status', 'draft')
-
+        
         story = FlaskAPIService.update_story(story_id, title, description, status)
         if story:
             return redirect('edit_story', story_id=story_id)
@@ -181,7 +183,60 @@ class EditStoryView(View):
                 'error': 'Failed to update story'
             })
 
+class DeleteStoryView(View):
 
+    def post(self, request, story_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        user_profile = request.user.userprofile
+        if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
+            return HttpResponseForbidden("You don't have permission to delete stories")
+        
+        if FlaskAPIService.delete_story(story_id):
+
+            Play.objects.filter(story_id=story_id).delete()
+            return redirect('stories_list')
+        else:
+            return redirect('edit_story', story_id=story_id)
+
+class CreateStoryView(View):
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        user_profile = request.user.userprofile
+        if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
+            return HttpResponseForbidden("Only authors can create stories")
+        
+        return render(request, 'author/create_story.html')
+    
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        user_profile = request.user.userprofile
+        if user_profile.role not in ['author', 'admin'] and not request.user.is_staff:
+            return HttpResponseForbidden("Only authors can create stories")
+        
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        if not title or not description:
+            return render(request, 'author/create_story.html', {
+                'error': 'Title and description are required'
+            })
+        
+        story = FlaskAPIService.create_story(title, description)
+        if story:
+            return redirect('edit_story', story_id=story['id'])
+        else:
+            return render(request, 'author/create_story.html', {
+                'error': 'Failed to create story'
+            })
+
+@method_decorator(login_required, name='dispatch')
 class DeleteStoryView(View):
 
     def post(self, request, story_id):
@@ -190,6 +245,7 @@ class DeleteStoryView(View):
         else:
             return redirect('edit_story', story_id=story_id)
 
+@method_decorator(login_required, name='dispatch')
 class AddPageView(View):
 
     def get(self, request, story_id):
@@ -219,6 +275,7 @@ class AddPageView(View):
                 'error': 'Failed to create page'
             })
 
+@method_decorator(login_required, name='dispatch')
 class AddChoiceView(View):
 
     def get(self, request, story_id, page_id):
@@ -260,7 +317,7 @@ class AddChoiceView(View):
                 'error': 'Failed to create choice'
             })
 
-     
+@method_decorator(login_required, name='dispatch')    
 class DeletePageView(View):
 
     def post(self, request, story_id, page_id):
@@ -269,7 +326,7 @@ class DeletePageView(View):
         else:
             return redirect('edit_story', story_id=story_id)
 
- 
+@method_decorator(login_required, name='dispatch')
 class DeleteChoiceView(View):
 
     def post(self, request, story_id, page_id, choice_id):
