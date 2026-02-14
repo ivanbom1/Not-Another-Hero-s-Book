@@ -1,24 +1,31 @@
 from flask import request, jsonify
 from services.flaskServices import StoryService
+from models.flaskModel import Story, Page, Choice
 
 
 class StoryController:
 
     @staticmethod
-    def get_published_stories():
+    def get_all_stories():
 
         try:
-            stories = StoryService.get_all_published_stories()
+            status = request.args.get('status')
+            
+            if status:
+                stories = StoryService.get_stories_by_status(status)
+            else:
+                stories = StoryService.get_all_stories()
+            
             return jsonify([{
                 'id': s.id,
                 'title': s.title,
                 'description': s.description,
                 'status': s.status,
-                'start_page_id': s.start_page_id
+                'start_page_id': s.start_page_id,
+                'author_id': s.author_id
             } for s in stories]), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-
 
     @staticmethod
     def get_story(story_id):
@@ -32,7 +39,8 @@ class StoryController:
                 'title': story.title,
                 'description': story.description,
                 'status': story.status,
-                'start_page_id': story.start_page_id
+                'start_page_id': story.start_page_id,
+                'author_id': story.author_id
             }), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
@@ -92,12 +100,14 @@ class StoryController:
             if not data or not data.get('title') or not data.get('description'):
                 return jsonify({'error': 'title and description required'}), 400
 
-            story = StoryService.create_story(data['title'], data['description'])
+            author_id = data.get('author_id')
+            story = StoryService.create_story(data['title'], data['description'], author_id)
             return jsonify({
                 'id': story.id,
                 'title': story.title,
                 'description': story.description,
                 'status': story.status,
+                'author_id': story.author_id,
                 'message': 'Story created'
             }), 201
         except Exception as e:

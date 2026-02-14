@@ -28,9 +28,11 @@
             <select id="status" name="status" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
                 <option value="draft" {% if story.status == 'draft' %}selected{% endif %}>Draft</option>
                 <option value="published" {% if story.status == 'published' %}selected{% endif %}>Published</option>
-                <option value="suspended" {% if story.status == 'suspended' %}selected{% endif %}>Suspended</option>
+                {% if user.is_staff %}
+                    <option value="suspended" {% if story.status == 'suspended' %}selected{% endif %}>Suspended (Admin Only)</option>
+                {% endif %}
             </select>
-        </div>
+        </div>  
         
         <button type="submit" class="btn btn-success">Save Changes</button>
     </form>
@@ -50,9 +52,6 @@
                         {% endif %}
                         
                         <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                            {% if not page.is_ending %}
-                                <a href="{% url 'add_choice' story.id page.id %}" class="btn" style="font-size: 0.9rem; padding: 0.5rem 1rem;">+ Add Choice</a>
-                            {% endif %}
                             <form method="post" action="{% url 'delete_page' story.id page.id %}" style="display: inline;" onsubmit="return confirm('Delete this page and all its choices?');">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Delete Page</button>

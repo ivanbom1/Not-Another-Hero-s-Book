@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Story Suspended - NAHB{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto; text-align: center;">
+    <h2>⛔ Story Suspended</h2>
+    
+    <div style="background: #f8d7da; padding: 2rem; border-radius: 8px; margin: 2rem 0;">
+        <p style="font-size: 1.1rem; color: #721c24;">
+            <strong>{{ story.title }}</strong> has been suspended by moderators.
+        </p>
+        <p style="color: #721c24;">This story is no longer available to play.</p>
+    </div>
+    
+    <div>
+        <a href="{% url 'stories_list' %}" class="btn">Back to Stories</a>
+    </div>
+</div>
+{% endblock %}

@@ -6,29 +6,29 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from game.models import UserProfile
 
+
 class RegisterView(View):
 
     def get(self, request):
-        return render(request, 'auth/register.html')
-    
+        return render(request, 'auth/registration.html')
+
     def post(self, request):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
         password_confirm = request.POST.get('password_confirm')
         role = request.POST.get('role', 'reader')
-        
 
         if not username or not email or not password:
             return render(request, 'auth/register.html', {
                 'error': 'All fields are required'
             })
-        
+
         if password != password_confirm:
             return render(request, 'auth/register.html', {
                 'error': 'Passwords do not match'
             })
-        
+
         if User.objects.filter(username=username).exists():
             return render(request, 'auth/register.html', {
                 'error': 'Username already exists'
@@ -62,7 +62,7 @@ class LoginView(View):
             })
 
 class LogoutView(View):
-    """User logout"""
+
     def get(self, request):
         logout(request)
         return redirect('stories_list')

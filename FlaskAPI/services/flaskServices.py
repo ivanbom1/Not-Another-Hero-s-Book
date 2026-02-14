@@ -4,8 +4,12 @@ from models.flaskModel import Story, Page, Choice
 class StoryService:
 
     @staticmethod
-    def get_all_published_stories():
-        return Story.query.filter_by(status='published').all()
+    def get_all_stories():
+        return Story.query.all()
+
+    @staticmethod
+    def get_stories_by_status(status):
+        return Story.query.filter_by(status=status).all()
     
 
     @staticmethod
@@ -27,8 +31,8 @@ class StoryService:
     
 
     @staticmethod
-    def create_story(title, description):
-        story = Story(title=title, description=description, status='draft')
+    def create_story(title, description, author_id=None):
+        story = Story(title=title, description=description, status='draft', author_id=author_id)
         db.session.add(story)
         db.session.commit()
         return story
