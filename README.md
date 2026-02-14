@@ -531,4 +531,4 @@ This project is created for educational purposes as a school assignment.
 - Story Writer: https://github.com/UglRar
 - Inspired by "Slay the Princess"
 - Story simplifier: Me
-- Original Story plot: 
+- Original Story plot: https://github.com/ivanbom1/Not-Another-Hero-s-Book/blob/main/SuspiciousCabin.drawio
