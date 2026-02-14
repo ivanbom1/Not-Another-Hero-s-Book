@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Story Complete - NAHB{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h2>🎊 {{ story.title }}</h2>
+    
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 8px; margin: 2rem 0;">
+        <h3 style="font-size: 2rem; margin-bottom: 1rem;">{{ page.ending_label|default:"The End" }}</h3>
+        <p style="font-size: 1.2rem;">{{ page.text }}</p>
+    </div>
+    
+    <div style="margin: 2rem 0;">
+        <p><strong>You have completed this story!</strong></p>
+        <p>Your playthrough has been recorded.</p>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{% url 'play_story' story.id %}" class="btn">Play Again</a>
+        <a href="{% url 'story_detail' story.id %}" class="btn">View Stats</a>
+        <a href="{% url 'stories_list' %}" class="btn">Browse Stories</a>
+    </div>
+</div>
+{% endblock %}

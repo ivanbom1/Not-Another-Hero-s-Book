@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Story - NAHB{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>✍️ Create New Story</h2>
+    
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+    
+    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+        {% csrf_token %}
+        
+        <div>
+            <label for="title">Story Title:</label>
+            <input type="text" id="title" name="title" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="5" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-success" style="flex: 1;">Create Story</button>
+            <a href="{% url 'stories_list' %}" class="btn" style="flex: 1; text-align: center;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
